@@ -11,12 +11,7 @@ def sendImage(frame):
 
     file = {'file': (seq, imencoded.tobytes(), 'image/jpeg')}
 
-    #response = requests.post("https://noeldev.site/cam", files=file, timeout=5)
-    #response = requests.post("http://localhost:3004/", files=file, timeout=5)
-    try:
-        response = requests.post("https://noeldev.site/cam", files=file, timeout=5)
-    except requests.exceptions.RequestException as e:
-        raise SystemExit(e)
+    response = requests.post("http://localhost:3004/", files=file, timeout=5)
 
     return response
 
