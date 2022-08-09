@@ -11,9 +11,13 @@ def sendImage(frame):
 
     file = {'file': (seq, imencoded.tobytes(), 'image/jpeg')}
 
-    response = requests.post("https://noeldev.site/cam", files=file, timeout=5)
-    
-    return response
+    try:
+        response = requests.post("https://noeldev.site/cam", files=file, timeout=5)
+        return response
+    except requests.exceptions.RequestException as e:
+        print(e)
+
+    return
 
 def takeImage():
     cap = cv2.VideoCapture(0)
