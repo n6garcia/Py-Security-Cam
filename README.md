@@ -1,3 +1,3 @@
 # py-security-cam
 
-Small Python Script which takes picture using OpenCV and sends to Go endpoint hosted on Server
+Python Script and Go endpoint which takes picture using OpenCV and sends to route on Server
