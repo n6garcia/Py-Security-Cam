@@ -2,47 +2,52 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
 
 func imgHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("recieved request!")
 
 	r.ParseMultipartForm(10 << 20)
 
 	file, header, err := r.FormFile("file")
-
 	if err != nil {
-		//fmt.Printf("error: %s\n", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	defer file.Close()
 
-	fn := header.Filename
+	name := header.Filename
 
-	fmt.Println(fn)
+	fmt.Println(name)
 
-	tempFile, err := ioutil.TempFile("images", fn+"-*.jpg")
-
+	// Make images directory if not already there
+	err = os.MkdirAll("./images", os.ModePerm)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	fileBytes, err := ioutil.ReadAll(file)
-
+	// Create a new file in the uploads directory
+	dst, err := os.Create(fmt.Sprintf("./images/%s.jpg", name))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	tempFile.Write(fileBytes)
+	defer dst.Close()
+
+	// Copy the uploaded file to the filesystem
+	_, err = io.Copy(dst, file)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 }
 
